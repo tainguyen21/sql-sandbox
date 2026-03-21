@@ -36,15 +36,15 @@ export class SandboxPoolService implements OnModuleDestroy {
     }
   }
 
-  /** Execute SQL within a workspace schema's search_path */
-  async executeInWorkspace(schemaName: string, sql: string): Promise<{ rows: any[]; rowCount: number }> {
+  /** Execute SQL within a workspace schema's search_path (with optional params) */
+  async executeInWorkspace(schemaName: string, sql: string, params?: any[]): Promise<{ rows: any[]; rowCount: number }> {
     this.validateSchemaName(schemaName);
     const client = await this.pool.connect();
     try {
       // Set search_path and statement timeout (30s max per query)
       await client.query(`SET search_path = "${schemaName}", public`);
       await client.query(`SET statement_timeout = '30s'`);
-      const result = await client.query(sql);
+      const result = params ? await client.query(sql, params) : await client.query(sql);
       return { rows: result.rows, rowCount: result.rowCount ?? 0 };
     } finally {
       // Reset all session state before returning client to pool

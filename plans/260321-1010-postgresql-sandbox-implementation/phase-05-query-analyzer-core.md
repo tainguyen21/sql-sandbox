@@ -7,7 +7,7 @@
 
 ## Overview
 - **Priority**: P1
-- **Status**: pending
+- **Status**: completed
 - **Effort**: 16h
 - **Blocked by**: Phase 03
 - **Description**: Core query analyzer: EXPLAIN plan parsing, plan tree visualization, Layer 3 (execution nodes) and Layer 4 (index report) signal detection.
@@ -157,18 +157,18 @@ POST /analyze ──→ AnalyzerService
     - Summary bar: total time, planning time, signal count by severity
 
 ## Todo List
-- [ ] Define shared analyzer types (PlanNode, PlanSignal, IndexReport, AnalysisResult)
-- [ ] Implement PlanParserService (recursive JSON → typed tree)
-- [ ] Implement Layer3DetectorService (4 signal types)
-- [ ] Implement Layer4DetectorService (2 signal types)
-- [ ] Implement IndexReportService
-- [ ] Implement AnalyzerService (orchestrates parse + detect)
-- [ ] Implement AnalyzerController (plan + full endpoints)
-- [ ] Build plan tree viewer with React Flow + cost heatmap
-- [ ] Build plan node detail panel
-- [ ] Build index report tab
-- [ ] Build analyzer panel with tabs
-- [ ] Test with various query types (simple select, join, subquery, aggregate)
+- [x] Define shared analyzer types (PlanNode, PlanSignal, IndexReport, AnalysisResult)
+- [x] Implement PlanParserService (recursive JSON → typed tree)
+- [x] Implement Layer3DetectorService (4 signal types)
+- [x] Implement Layer4DetectorService (2 signal types)
+- [x] Implement IndexReportService
+- [x] Implement AnalyzerService (orchestrates parse + detect)
+- [x] Implement AnalyzerController (plan + full endpoints)
+- [x] Build plan tree viewer with React Flow + cost heatmap
+- [x] Build plan node detail panel
+- [x] Build index report tab
+- [x] Build analyzer panel with tabs
+- [x] Test with various query types (simple select, join, subquery, aggregate)
 
 ## Success Criteria
 - EXPLAIN JSON parsed correctly for all common plan node types

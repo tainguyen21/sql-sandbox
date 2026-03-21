@@ -8,6 +8,7 @@ import { QueryHistoryPanel } from '@/components/editor/query-history-panel';
 import { SnippetSidebar } from '@/components/editor/snippet-sidebar';
 import { TableListPanel } from '@/components/schema/table-list-panel';
 import { TableDetailPanel } from '@/components/schema/table-detail-panel';
+import { AnalyzerPanel } from '@/components/analyzer/analyzer-panel';
 
 export default function WorkspacePage() {
   const params = useParams();
@@ -17,7 +18,7 @@ export default function WorkspacePage() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
   const [editorSql, setEditorSql] = useState('');
-  const [activeTab, setActiveTab] = useState<'editor' | 'schema'>('editor');
+  const [activeTab, setActiveTab] = useState<'editor' | 'schema' | 'analyze'>('editor');
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -54,6 +55,16 @@ export default function WorkspacePage() {
         </button>
         <button
           className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === 'analyze'
+              ? 'border-primary text-foreground'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          }`}
+          onClick={() => setActiveTab('analyze')}
+        >
+          Analyze
+        </button>
+        <button
+          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
             activeTab === 'schema'
               ? 'border-primary text-foreground'
               : 'border-transparent text-muted-foreground hover:text-foreground'
@@ -86,6 +97,11 @@ export default function WorkspacePage() {
             />
           </div>
         </div>
+      )}
+
+      {/* Analyze tab */}
+      {activeTab === 'analyze' && (
+        <AnalyzerPanel workspaceId={workspaceId} sql={editorSql} />
       )}
 
       {/* Schema tab */}

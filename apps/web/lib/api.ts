@@ -67,4 +67,11 @@ export const api = {
     }),
   deleteSnippet: (workspaceId: string, id: string) =>
     fetcher<any>(`/workspaces/${workspaceId}/snippets/${id}`, { method: 'DELETE' }),
+
+  // Analyzer
+  analyzeQuery: (workspaceId: string, sql: string, mode: 'plan' | 'full' = 'full') =>
+    fetcher<any>(`/workspaces/${workspaceId}/analyze${mode === 'plan' ? '/plan' : ''}`, {
+      method: 'POST',
+      body: JSON.stringify({ sql, mode }),
+    }),
 };
