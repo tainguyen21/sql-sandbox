@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node:*)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm --filter @sql-sandbox/web build)",
+      "Bash(pnpm --filter @sql-sandbox/api build)",
+      "Bash(docker compose:*)",
+      "Bash(pnpm build:*)",
+      "Bash(pnpm:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}

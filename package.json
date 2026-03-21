@@ -1,0 +1,21 @@
+{
+  "name": "@sql-sandbox/monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,yaml,md}\"",
+    "db:generate": "pnpm --filter @sql-sandbox/db generate",
+    "db:migrate": "pnpm --filter @sql-sandbox/db migrate",
+    "db:studio": "pnpm --filter @sql-sandbox/db studio"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.0",
+    "prettier": "^3.4.0",
+    "typescript": "^5.7.0"
+  }
+}
