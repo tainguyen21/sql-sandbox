@@ -7,7 +7,7 @@
 
 ## Overview
 - **Priority**: P1
-- **Status**: pending
+- **Status**: completed
 - **Effort**: 12h
 - **Blocked by**: Phase 01
 - **Description**: Workspace CRUD with schema isolation, SQL-mode table creation via Monaco, table introspection.
@@ -128,16 +128,16 @@ Frontend (Next.js)                    Backend (NestJS)
    - Refresh table list on success
 
 ## Todo List
-- [ ] Create SandboxPoolService with search_path isolation
-- [ ] Create SqlValidatorService with blocklist
-- [ ] Implement WorkspaceService (CRUD + table introspection)
-- [ ] Implement WorkspaceController with all endpoints
-- [ ] Create shared types for workspace and schema
-- [ ] Build workspace sidebar component
-- [ ] Build workspace create modal
-- [ ] Build table list panel
-- [ ] Build SQL schema editor with Monaco (basic)
-- [ ] Build table detail panel
+- [x] Create SandboxPoolService with search_path isolation
+- [x] Create SqlValidatorService with blocklist
+- [x] Implement WorkspaceService (CRUD + table introspection)
+- [x] Implement WorkspaceController with all endpoints
+- [x] Create shared types for workspace and schema
+- [x] Build workspace sidebar component
+- [x] Build workspace create modal
+- [x] Build table list panel
+- [x] Build SQL schema editor with Monaco (basic)
+- [x] Build table detail panel
 - [ ] Write integration tests for workspace CRUD
 - [ ] Test schema isolation (workspace A cannot see workspace B tables)
 

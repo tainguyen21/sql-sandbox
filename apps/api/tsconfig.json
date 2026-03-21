@@ -11,9 +11,12 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
+    "strictPropertyInitialization": false,
     "paths": {
       "@sql-sandbox/db": ["../../packages/db/src"],
-      "@sql-sandbox/shared": ["../../packages/shared/src"]
+      "@sql-sandbox/db/*": ["../../packages/db/src/*"],
+      "@sql-sandbox/shared": ["../../packages/shared/src"],
+      "@sql-sandbox/shared/*": ["../../packages/shared/src/*"]
     }
   },
   "include": ["src/**/*"],

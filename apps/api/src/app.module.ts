@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
+import { DatabaseModule } from './modules/database/database.module';
+import { WorkspaceModule } from './modules/workspace/workspace.module';
 
 @Module({
   imports: [
@@ -8,7 +10,8 @@ import { AppController } from './app.controller';
       isGlobal: true,
       envFilePath: '../../.env',
     }),
-    // WorkspaceModule, QueryModule, AnalyzerModule — added in Phase 02+
+    DatabaseModule,
+    WorkspaceModule,
   ],
   controllers: [AppController],
 })
