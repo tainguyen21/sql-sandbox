@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { DatabaseModule } from './modules/database/database.module';
 import { WorkspaceModule } from './modules/workspace/workspace.module';
+import { QueryModule } from './modules/query/query.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { WorkspaceModule } from './modules/workspace/workspace.module';
     }),
     DatabaseModule,
     WorkspaceModule,
+    QueryModule,
   ],
   controllers: [AppController],
 })

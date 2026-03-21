@@ -47,8 +47,8 @@ export class SandboxPoolService implements OnModuleDestroy {
       const result = await client.query(sql);
       return { rows: result.rows, rowCount: result.rowCount ?? 0 };
     } finally {
-      // Reset search_path before returning client to pool
-      await client.query('RESET search_path').catch(() => {});
+      // Reset all session state before returning client to pool
+      await client.query('RESET ALL').catch(() => {});
       client.release();
     }
   }

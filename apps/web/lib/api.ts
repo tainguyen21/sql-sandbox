@@ -40,4 +40,31 @@ export const api = {
     }),
   dropTable: (workspaceId: string, table: string) =>
     fetcher<any>(`/workspaces/${workspaceId}/tables/${table}`, { method: 'DELETE' }),
+
+  // Query execution
+  executeQuery: (workspaceId: string, sql: string, page?: number) =>
+    fetcher<any>(`/workspaces/${workspaceId}/query`, {
+      method: 'POST',
+      body: JSON.stringify({ sql, page }),
+    }),
+
+  // Query history
+  getQueryHistory: (workspaceId: string, search?: string, page?: number) =>
+    fetcher<any>(
+      `/workspaces/${workspaceId}/query/history?${new URLSearchParams({
+        ...(search ? { search } : {}),
+        ...(page ? { page: String(page) } : {}),
+      })}`,
+    ),
+
+  // Snippets
+  getSnippets: (workspaceId: string) =>
+    fetcher<any[]>(`/workspaces/${workspaceId}/snippets`),
+  saveSnippet: (workspaceId: string, data: { name: string; sql: string; tags?: string[] }) =>
+    fetcher<any>(`/workspaces/${workspaceId}/snippets`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  deleteSnippet: (workspaceId: string, id: string) =>
+    fetcher<any>(`/workspaces/${workspaceId}/snippets/${id}`, { method: 'DELETE' }),
 };

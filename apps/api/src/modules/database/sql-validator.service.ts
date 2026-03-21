@@ -39,6 +39,15 @@ export class SqlValidatorService {
    * Validate SQL against blocklist.
    * Throws BadRequestException if blocked pattern found.
    */
+  /** Strip SQL comments to prevent blocklist bypass via comment injection */
+  private stripComments(sql: string): string {
+    // Remove block comments /* ... */ (including nested)
+    let result = sql.replace(/\/\*[\s\S]*?\*\//g, ' ');
+    // Remove line comments -- ...
+    result = result.replace(/--[^\n]*/g, ' ');
+    return result;
+  }
+
   validate(sql: string): void {
     const trimmed = sql.trim();
 
@@ -46,8 +55,11 @@ export class SqlValidatorService {
       throw new BadRequestException('SQL cannot be empty');
     }
 
+    // Strip comments before checking blocklist to prevent bypass
+    const stripped = this.stripComments(trimmed);
+
     for (const { pattern, reason } of BLOCKED_PATTERNS) {
-      if (pattern.test(trimmed)) {
+      if (pattern.test(stripped)) {
         throw new BadRequestException(`Blocked SQL: ${reason}`);
       }
     }
