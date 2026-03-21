@@ -98,4 +98,52 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ sqlA, sqlB }),
     }),
+
+  // Index Manager
+  listIndexes: (workspaceId: string) =>
+    fetcher<any[]>(`/workspaces/${workspaceId}/indexes`),
+  createIndex: (
+    workspaceId: string,
+    data: {
+      tableName: string;
+      columns: string[];
+      indexType: 'btree' | 'hash' | 'gin' | 'gist' | 'brin';
+      unique: boolean;
+      concurrently: boolean;
+      whereClause?: string;
+    },
+  ) =>
+    fetcher<any>(`/workspaces/${workspaceId}/indexes`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  dropIndex: (workspaceId: string, indexName: string) =>
+    fetcher<any>(`/workspaces/${workspaceId}/indexes/${indexName}`, {
+      method: 'DELETE',
+    }),
+
+  // Transaction Lab
+  createLab: (workspaceId: string) =>
+    fetcher<{ labId: string }>('/labs', {
+      method: 'POST',
+      body: JSON.stringify({ workspaceId }),
+    }),
+  labExecute: (labId: string, session: 'a' | 'b', sql: string) =>
+    fetcher<any>(`/labs/${labId}/sessions/${session}/execute`, {
+      method: 'POST',
+      body: JSON.stringify({ sql }),
+    }),
+  labBegin: (labId: string, session: 'a' | 'b', isolationLevel?: string) =>
+    fetcher<any>(`/labs/${labId}/sessions/${session}/begin`, {
+      method: 'POST',
+      body: JSON.stringify({ isolationLevel }),
+    }),
+  labCommit: (labId: string, session: 'a' | 'b') =>
+    fetcher<any>(`/labs/${labId}/sessions/${session}/commit`, { method: 'POST' }),
+  labRollback: (labId: string, session: 'a' | 'b') =>
+    fetcher<any>(`/labs/${labId}/sessions/${session}/rollback`, { method: 'POST' }),
+  labGetLocks: (labId: string) =>
+    fetcher<any>(`/labs/${labId}/locks`),
+  deleteLab: (labId: string) =>
+    fetcher<any>(`/labs/${labId}`, { method: 'DELETE' }),
 };

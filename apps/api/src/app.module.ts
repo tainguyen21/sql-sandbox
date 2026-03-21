@@ -6,6 +6,8 @@ import { WorkspaceModule } from './modules/workspace/workspace.module';
 import { QueryModule } from './modules/query/query.module';
 import { AnalyzerModule } from './modules/analyzer/analyzer.module';
 import { OptimizerModule } from './modules/optimizer/optimizer.module';
+import { IndexManagerModule } from './modules/index-manager/index-manager.module';
+import { LabModule } from './modules/lab/lab.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { OptimizerModule } from './modules/optimizer/optimizer.module';
     QueryModule,
     AnalyzerModule,
     OptimizerModule,
+    IndexManagerModule,
+    LabModule,
   ],
   controllers: [AppController],
 })

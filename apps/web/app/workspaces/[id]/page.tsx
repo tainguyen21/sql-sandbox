@@ -11,6 +11,8 @@ import { TableDetailPanel } from '@/components/schema/table-detail-panel';
 import { AnalyzerPanel } from '@/components/analyzer/analyzer-panel';
 import { AiSuggestionPanel } from '@/components/optimizer/ai-suggestion-panel';
 import { AbComparePanel } from '@/components/compare/ab-compare-panel';
+import { IndexManagerPanel } from '@/components/index-manager/index-manager-panel';
+import { TransactionLabPanel } from '@/components/lab/transaction-lab-panel';
 
 export default function WorkspacePage() {
   const params = useParams();
@@ -20,7 +22,7 @@ export default function WorkspacePage() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
   const [editorSql, setEditorSql] = useState('');
-  const [activeTab, setActiveTab] = useState<'editor' | 'schema' | 'analyze' | 'optimize' | 'compare'>('editor');
+  const [activeTab, setActiveTab] = useState<'editor' | 'schema' | 'analyze' | 'optimize' | 'compare' | 'indexes' | 'txlab'>('editor');
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -95,6 +97,26 @@ export default function WorkspacePage() {
         >
           A/B Compare
         </button>
+        <button
+          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === 'indexes'
+              ? 'border-primary text-foreground'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          }`}
+          onClick={() => setActiveTab('indexes')}
+        >
+          Indexes
+        </button>
+        <button
+          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === 'txlab'
+              ? 'border-primary text-foreground'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          }`}
+          onClick={() => setActiveTab('txlab')}
+        >
+          Transaction Lab
+        </button>
       </div>
 
       {/* Editor tab */}
@@ -150,6 +172,16 @@ export default function WorkspacePage() {
       {/* A/B Compare tab */}
       {activeTab === 'compare' && (
         <AbComparePanel workspaceId={workspaceId} />
+      )}
+
+      {/* Indexes tab */}
+      {activeTab === 'indexes' && (
+        <IndexManagerPanel workspaceId={workspaceId} />
+      )}
+
+      {/* Transaction Lab tab */}
+      {activeTab === 'txlab' && (
+        <TransactionLabPanel workspaceId={workspaceId} />
       )}
     </div>
   );
