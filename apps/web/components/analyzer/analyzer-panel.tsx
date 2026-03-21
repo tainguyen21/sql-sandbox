@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { PlanTreeViewer } from './plan-tree-viewer';
 import { PlanNodeDetail } from './plan-node-detail';
 import { IndexReportTab } from './index-report-tab';
+import { PlannerContextTab } from './planner-context-tab';
+import { StorageMvccTab } from './storage-mvcc-tab';
 import { SignalBadge } from './signal-badge';
 
 interface Props {
@@ -18,7 +20,7 @@ export function AnalyzerPanel({ workspaceId, sql }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [selectedNode, setSelectedNode] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState<'plan' | 'indexes'>('plan');
+  const [activeTab, setActiveTab] = useState<'plan' | 'indexes' | 'planner' | 'storage'>('plan');
 
   const runAnalysis = async (mode: 'plan' | 'full') => {
     if (!sql.trim()) return;
@@ -92,6 +94,22 @@ export function AnalyzerPanel({ workspaceId, sql }: Props) {
             >
               Index Report ({result.indexes.length})
             </button>
+            <button
+              className={`px-3 py-1.5 text-sm font-medium border-b-2 ${
+                activeTab === 'planner' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground'
+              }`}
+              onClick={() => setActiveTab('planner')}
+            >
+              Planner Context
+            </button>
+            <button
+              className={`px-3 py-1.5 text-sm font-medium border-b-2 ${
+                activeTab === 'storage' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground'
+              }`}
+              onClick={() => setActiveTab('storage')}
+            >
+              Storage & MVCC
+            </button>
           </div>
 
           {/* Tab content */}
@@ -110,6 +128,21 @@ export function AnalyzerPanel({ workspaceId, sql }: Props) {
 
           {activeTab === 'indexes' && (
             <IndexReportTab indexes={result.indexes} signals={result.signals} />
+          )}
+
+          {activeTab === 'planner' && (
+            <PlannerContextTab
+              gucValues={result.gucValues || []}
+              columnStats={result.columnStats || []}
+              signals={result.signals}
+            />
+          )}
+
+          {activeTab === 'storage' && (
+            <StorageMvccTab
+              tableStorageStats={result.tableStorageStats || []}
+              signals={result.signals}
+            />
           )}
         </>
       )}

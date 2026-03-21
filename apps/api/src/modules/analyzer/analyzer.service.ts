@@ -1,12 +1,16 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { SandboxPoolService } from '../database/sandbox-pool.service';
 import { SqlValidatorService } from '../database/sql-validator.service';
 import { WorkspaceService } from '../workspace/workspace.service';
 import { PlanParserService } from './plan-parser.service';
+import { Layer1DetectorService } from './layer1-detector.service';
+import { Layer2DetectorService } from './layer2-detector.service';
 import { Layer3DetectorService } from './layer3-detector.service';
 import { Layer4DetectorService } from './layer4-detector.service';
+import { Layer5DetectorService } from './layer5-detector.service';
 import { IndexReportService } from './index-report.service';
-import type { AnalysisResult, PlanSignal } from '@sql-sandbox/shared';
+import { CatalogQueryService } from './catalog-query.service';
+import type { PlanSignal } from '@sql-sandbox/shared';
 
 @Injectable()
 export class AnalyzerService {
@@ -15,13 +19,17 @@ export class AnalyzerService {
     private validator: SqlValidatorService,
     private workspaceService: WorkspaceService,
     private planParser: PlanParserService,
+    private layer1: Layer1DetectorService,
+    private layer2: Layer2DetectorService,
     private layer3: Layer3DetectorService,
     private layer4: Layer4DetectorService,
+    private layer5: Layer5DetectorService,
     private indexReport: IndexReportService,
+    private catalogQuery: CatalogQueryService,
   ) {}
 
   /** Run query analysis (plan-only or full with ANALYZE) */
-  async analyze(workspaceId: string, sql: string, mode: 'plan' | 'full' = 'full'): Promise<AnalysisResult> {
+  async analyze(workspaceId: string, sql: string, mode: 'plan' | 'full' = 'full') {
     this.validator.validate(sql);
     const workspace = await this.workspaceService.findOne(workspaceId);
     const schema = workspace.schemaName;
@@ -31,7 +39,7 @@ export class AnalyzerService {
       ? 'ANALYZE, BUFFERS, VERBOSE, FORMAT JSON'
       : 'VERBOSE, FORMAT JSON';
 
-    // For DML in full mode, wrap in transaction + rollback to avoid data changes
+    // For DML in full mode, wrap in transaction + rollback
     const isDml = this.validator.isDMLWrite(sql);
     let explainResult: any;
 
@@ -44,7 +52,6 @@ export class AnalyzerService {
         const result = await client.query(`EXPLAIN (${explainOpts}) ${sql}`);
         explainResult = result.rows;
       } finally {
-        // Always rollback to undo DML side effects, even on error
         await client.query('ROLLBACK').catch(() => {});
         await client.query('RESET ALL').catch(() => {});
         client.release();
@@ -57,36 +64,60 @@ export class AnalyzerService {
       explainResult = rows;
     }
 
-    // PG returns EXPLAIN JSON as rows with a single column "QUERY PLAN"
+    // Parse plan JSON
     const planJson = explainResult[0]['QUERY PLAN'] || explainResult;
-
-    // Parse the plan tree
     const { plan, planningTime, executionTime } = this.planParser.parse(
       Array.isArray(planJson) ? planJson : [planJson],
     );
 
-    // Extract tables referenced in the plan
+    // Extract tables and used indexes from plan
     const tables = this.planParser.extractTables(plan);
-
-    // Collect used indexes from plan nodes
     const usedIndexes = new Set<string>();
     this.planParser.walkTree(plan, (node) => {
       if (node.indexName) usedIndexes.add(node.indexName);
     });
 
-    // Run signal detectors in parallel
-    const [layer3Signals, layer4Signals, indexes] = await Promise.all([
+    // Run all catalog queries + detectors in parallel
+    const [
+      layer3Signals,
+      layer4Signals,
+      indexes,
+      columnStats,
+      gucValues,
+      tableStorageStats,
+    ] = await Promise.all([
       Promise.resolve(this.layer3.detect(plan, plan.totalCost)),
       this.layer4.detect(schema, tables),
       this.indexReport.getReport(schema, tables, usedIndexes),
+      this.catalogQuery.getColumnStats(schema, tables),
+      this.catalogQuery.getGUCValues(),
+      this.catalogQuery.getTableStorageStats(schema, tables),
     ]);
 
-    const allSignals: PlanSignal[] = [...layer3Signals, ...layer4Signals];
+    // Layer 1: CTE fence detection (synchronous, plan-only)
+    const layer1Signals = this.layer1.detect(plan);
+
+    // Layer 2: Planner context (needs layer3 signals for cross-reference)
+    const layer2Signals = this.layer2.detect(plan, tableStorageStats, gucValues, layer3Signals);
+
+    // Layer 5: MVCC/storage
+    const layer5Signals = this.layer5.detect(tableStorageStats);
+
+    const allSignals: PlanSignal[] = [
+      ...layer1Signals,
+      ...layer2Signals,
+      ...layer3Signals,
+      ...layer4Signals,
+      ...layer5Signals,
+    ];
 
     return {
       plan,
       signals: allSignals,
       indexes,
+      columnStats,
+      gucValues,
+      tableStorageStats,
       executionTime,
       planningTime,
       mode,
