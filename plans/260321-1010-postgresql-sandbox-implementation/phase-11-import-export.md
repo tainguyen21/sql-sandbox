@@ -6,7 +6,7 @@
 
 ## Overview
 - **Priority**: P3
-- **Status**: pending
+- **Status**: completed
 - **Effort**: 8h
 - **Blocked by**: Phase 02
 - **Description**: CSV/JSON/SQL file import, CSV export per table (streamed), full workspace SQL dump export.

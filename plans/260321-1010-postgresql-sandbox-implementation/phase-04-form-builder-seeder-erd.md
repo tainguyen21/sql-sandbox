@@ -8,7 +8,7 @@
 
 ## Overview
 - **Priority**: P2
-- **Status**: pending
+- **Status**: completed
 - **Effort**: 14h
 - **Blocked by**: Phase 02
 - **Description**: Form-based table creation UI, faker-powered data seeder with FK-aware ordering, ERD visualization with React Flow.

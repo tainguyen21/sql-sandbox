@@ -7,7 +7,7 @@
 
 ## Overview
 - **Priority**: P2
-- **Status**: pending
+- **Status**: completed
 - **Effort**: 10h
 - **Blocked by**: Phase 06, Phase 09
 - **Description**: Complete the 7-layer analyzer with Layer 6 (locks during query execution) and Layer 7 (WAL/write path for DML). Integrate lock viewer into analyzer and add write path panel.
