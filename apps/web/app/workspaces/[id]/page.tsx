@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import { SqlEditorPanel } from '@/components/editor/sql-editor-panel';
@@ -8,11 +9,36 @@ import { QueryHistoryPanel } from '@/components/editor/query-history-panel';
 import { SnippetSidebar } from '@/components/editor/snippet-sidebar';
 import { TableListPanel } from '@/components/schema/table-list-panel';
 import { TableDetailPanel } from '@/components/schema/table-detail-panel';
+import { FormTableBuilder } from '@/components/schema/form-table-builder';
 import { AnalyzerPanel } from '@/components/analyzer/analyzer-panel';
 import { AiSuggestionPanel } from '@/components/optimizer/ai-suggestion-panel';
 import { AbComparePanel } from '@/components/compare/ab-compare-panel';
 import { IndexManagerPanel } from '@/components/index-manager/index-manager-panel';
 import { TransactionLabPanel } from '@/components/lab/transaction-lab-panel';
+import { SeedConfigPanel } from '@/components/seeder/seed-config-panel';
+import { ImportPanel } from '@/components/import-export/import-panel';
+import { ExportButtons } from '@/components/import-export/export-buttons';
+
+/** ReactFlow uses browser-only APIs — must be loaded client-side only */
+const ErdViewer = dynamic(
+  () => import('@/components/erd/erd-viewer').then((m) => m.ErdViewer),
+  { ssr: false, loading: () => <div className="p-6 text-muted-foreground text-sm">Loading ERD...</div> },
+);
+
+type Tab = 'editor' | 'schema' | 'analyze' | 'optimize' | 'compare' | 'indexes' | 'txlab' | 'seed' | 'erd' | 'importexport';
+
+const TABS: { id: Tab; label: string }[] = [
+  { id: 'editor', label: 'SQL Editor' },
+  { id: 'analyze', label: 'Analyze' },
+  { id: 'schema', label: 'Schema' },
+  { id: 'optimize', label: 'AI Optimize' },
+  { id: 'compare', label: 'A/B Compare' },
+  { id: 'indexes', label: 'Indexes' },
+  { id: 'txlab', label: 'Transaction Lab' },
+  { id: 'seed', label: 'Seed Data' },
+  { id: 'erd', label: 'ERD' },
+  { id: 'importexport', label: 'Import / Export' },
+];
 
 export default function WorkspacePage() {
   const params = useParams();
@@ -22,12 +48,18 @@ export default function WorkspacePage() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
   const [editorSql, setEditorSql] = useState('');
-  const [activeTab, setActiveTab] = useState<'editor' | 'schema' | 'analyze' | 'optimize' | 'compare' | 'indexes' | 'txlab'>('editor');
+  const [activeTab, setActiveTab] = useState<Tab>('editor');
   const [error, setError] = useState('');
+  const [tables, setTables] = useState<string[]>([]);
 
   useEffect(() => {
     api.getWorkspace(workspaceId).then(setWorkspace).catch((err) => setError(err.message));
   }, [workspaceId]);
+
+  // Keep tables list in sync for seed config and form builder
+  useEffect(() => {
+    api.getTables(workspaceId).then(setTables).catch(() => {});
+  }, [workspaceId, refreshKey]);
 
   if (error) return <div className="p-6 text-destructive">{error}</div>;
   if (!workspace) return <div className="p-6 text-muted-foreground">Loading workspace...</div>;
@@ -46,77 +78,20 @@ export default function WorkspacePage() {
       </div>
 
       {/* Tab navigation */}
-      <div className="flex gap-1 border-b">
-        <button
-          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === 'editor'
-              ? 'border-primary text-foreground'
-              : 'border-transparent text-muted-foreground hover:text-foreground'
-          }`}
-          onClick={() => setActiveTab('editor')}
-        >
-          SQL Editor
-        </button>
-        <button
-          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === 'analyze'
-              ? 'border-primary text-foreground'
-              : 'border-transparent text-muted-foreground hover:text-foreground'
-          }`}
-          onClick={() => setActiveTab('analyze')}
-        >
-          Analyze
-        </button>
-        <button
-          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === 'schema'
-              ? 'border-primary text-foreground'
-              : 'border-transparent text-muted-foreground hover:text-foreground'
-          }`}
-          onClick={() => setActiveTab('schema')}
-        >
-          Schema
-        </button>
-        <button
-          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === 'optimize'
-              ? 'border-primary text-foreground'
-              : 'border-transparent text-muted-foreground hover:text-foreground'
-          }`}
-          onClick={() => setActiveTab('optimize')}
-        >
-          AI Optimize
-        </button>
-        <button
-          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === 'compare'
-              ? 'border-primary text-foreground'
-              : 'border-transparent text-muted-foreground hover:text-foreground'
-          }`}
-          onClick={() => setActiveTab('compare')}
-        >
-          A/B Compare
-        </button>
-        <button
-          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === 'indexes'
-              ? 'border-primary text-foreground'
-              : 'border-transparent text-muted-foreground hover:text-foreground'
-          }`}
-          onClick={() => setActiveTab('indexes')}
-        >
-          Indexes
-        </button>
-        <button
-          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === 'txlab'
-              ? 'border-primary text-foreground'
-              : 'border-transparent text-muted-foreground hover:text-foreground'
-          }`}
-          onClick={() => setActiveTab('txlab')}
-        >
-          Transaction Lab
-        </button>
+      <div className="flex flex-wrap gap-1 border-b">
+        {TABS.map(({ id, label }) => (
+          <button
+            key={id}
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === id
+                ? 'border-primary text-foreground'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
+            }`}
+            onClick={() => setActiveTab(id)}
+          >
+            {label}
+          </button>
+        ))}
       </div>
 
       {/* Editor tab */}
@@ -148,15 +123,22 @@ export default function WorkspacePage() {
         <AnalyzerPanel workspaceId={workspaceId} sql={editorSql} />
       )}
 
-      {/* Schema tab */}
+      {/* Schema tab — table list + detail + form builder */}
       {activeTab === 'schema' && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <TableListPanel
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <TableListPanel
+              workspaceId={workspaceId}
+              onSelectTable={setSelectedTable}
+              refreshKey={refreshKey}
+            />
+            <TableDetailPanel workspaceId={workspaceId} tableName={selectedTable} />
+          </div>
+          <FormTableBuilder
             workspaceId={workspaceId}
-            onSelectTable={setSelectedTable}
-            refreshKey={refreshKey}
+            existingTables={tables}
+            onCreated={() => setRefreshKey((k) => k + 1)}
           />
-          <TableDetailPanel workspaceId={workspaceId} tableName={selectedTable} />
         </div>
       )}
 
@@ -182,6 +164,40 @@ export default function WorkspacePage() {
       {/* Transaction Lab tab */}
       {activeTab === 'txlab' && (
         <TransactionLabPanel workspaceId={workspaceId} />
+      )}
+
+      {/* Seed Data tab */}
+      {activeTab === 'seed' && (
+        <div className="border rounded-md p-4">
+          <h3 className="text-sm font-semibold mb-4">Seed Data with Faker</h3>
+          {tables.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              No tables found. Create tables in the Schema tab first.
+            </p>
+          ) : (
+            <SeedConfigPanel workspaceId={workspaceId} tables={tables} />
+          )}
+        </div>
+      )}
+
+      {/* ERD tab */}
+      {activeTab === 'erd' && (
+        <ErdViewer workspaceId={workspaceId} />
+      )}
+
+      {/* Import / Export tab */}
+      {activeTab === 'importexport' && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="border rounded-md p-4">
+            <ImportPanel
+              workspaceId={workspaceId}
+              onImported={() => setRefreshKey((k) => k + 1)}
+            />
+          </div>
+          <div className="border rounded-md p-4">
+            <ExportButtons workspaceId={workspaceId} tables={tables} />
+          </div>
+        </div>
       )}
     </div>
   );

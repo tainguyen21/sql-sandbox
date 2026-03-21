@@ -8,6 +8,8 @@ import { PlanNodeDetail } from './plan-node-detail';
 import { IndexReportTab } from './index-report-tab';
 import { PlannerContextTab } from './planner-context-tab';
 import { StorageMvccTab } from './storage-mvcc-tab';
+import { LocksTab } from './locks-tab';
+import { WritePathTab } from './write-path-tab';
 import { SignalBadge } from './signal-badge';
 
 interface Props {
@@ -20,7 +22,7 @@ export function AnalyzerPanel({ workspaceId, sql }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [selectedNode, setSelectedNode] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState<'plan' | 'indexes' | 'planner' | 'storage'>('plan');
+  const [activeTab, setActiveTab] = useState<'plan' | 'indexes' | 'planner' | 'storage' | 'locks' | 'wal'>('plan');
 
   const runAnalysis = async (mode: 'plan' | 'full') => {
     if (!sql.trim()) return;
@@ -110,6 +112,22 @@ export function AnalyzerPanel({ workspaceId, sql }: Props) {
             >
               Storage & MVCC
             </button>
+            <button
+              className={`px-3 py-1.5 text-sm font-medium border-b-2 ${
+                activeTab === 'locks' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground'
+              }`}
+              onClick={() => setActiveTab('locks')}
+            >
+              Locks {result?.locks?.length > 0 && `(${result.locks.length})`}
+            </button>
+            <button
+              className={`px-3 py-1.5 text-sm font-medium border-b-2 ${
+                activeTab === 'wal' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground'
+              }`}
+              onClick={() => setActiveTab('wal')}
+            >
+              Write Path
+            </button>
           </div>
 
           {/* Tab content */}
@@ -141,6 +159,21 @@ export function AnalyzerPanel({ workspaceId, sql }: Props) {
           {activeTab === 'storage' && (
             <StorageMvccTab
               tableStorageStats={result.tableStorageStats || []}
+              signals={result.signals}
+            />
+          )}
+
+          {activeTab === 'locks' && (
+            <LocksTab
+              locks={result.locks || []}
+              signals={result.signals}
+            />
+          )}
+
+          {activeTab === 'wal' && (
+            <WritePathTab
+              walStats={result.walStats || null}
+              isDml={result.isDml || false}
               signals={result.signals}
             />
           )}

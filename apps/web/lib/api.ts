@@ -122,6 +122,78 @@ export const api = {
       method: 'DELETE',
     }),
 
+  // Seeder
+  seedWorkspace: (
+    workspaceId: string,
+    options: { rowCount?: number; locale?: string; tables?: string[] },
+  ) =>
+    fetcher<{ seeded: Record<string, number> }>(`/workspaces/${workspaceId}/seed`, {
+      method: 'POST',
+      body: JSON.stringify(options),
+    }),
+  previewSeed: (
+    workspaceId: string,
+    options: { rowCount?: number; locale?: string; tables?: string[] },
+  ) =>
+    fetcher<{ preview: Record<string, Record<string, any>[]> }>(
+      `/workspaces/${workspaceId}/seed/preview`,
+      { method: 'POST', body: JSON.stringify(options) },
+    ),
+
+  // ERD
+  getErd: (workspaceId: string) =>
+    fetcher<{
+      tables: Array<{
+        name: string;
+        columns: Array<{
+          name: string;
+          type: string;
+          isPk: boolean;
+          isNullable: boolean;
+          isFk: boolean;
+          fkRef?: string;
+        }>;
+      }>;
+      relationships: Array<{
+        from: string;
+        to: string;
+        fromColumn: string;
+        toColumn: string;
+      }>;
+    }>(`/workspaces/${workspaceId}/erd`),
+
+  // Import / Export
+  previewImport: (workspaceId: string, file: File) => {
+    const form = new FormData();
+    form.append('file', file);
+    return fetch(`${API_BASE}/workspaces/${workspaceId}/import/preview`, {
+      method: 'POST',
+      body: form,
+    }).then(async (res) => {
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error((body as any).message || `API error: ${res.status}`);
+      }
+      return res.json() as Promise<Array<{ name: string; type: string }>>;
+    });
+  },
+
+  importCsv: (workspaceId: string, file: File, tableName?: string) => {
+    const form = new FormData();
+    form.append('file', file);
+    if (tableName) form.append('tableName', tableName);
+    return fetch(`${API_BASE}/workspaces/${workspaceId}/import`, {
+      method: 'POST',
+      body: form,
+    }).then(async (res) => {
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error((body as any).message || `API error: ${res.status}`);
+      }
+      return res.json() as Promise<{ tableName: string; rowsInserted: number; columns: any[] }>;
+    });
+  },
+
   // Transaction Lab
   createLab: (workspaceId: string) =>
     fetcher<{ labId: string }>('/labs', {

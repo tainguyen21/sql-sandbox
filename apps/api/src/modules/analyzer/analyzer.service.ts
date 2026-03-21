@@ -8,6 +8,8 @@ import { Layer2DetectorService } from './layer2-detector.service';
 import { Layer3DetectorService } from './layer3-detector.service';
 import { Layer4DetectorService } from './layer4-detector.service';
 import { Layer5DetectorService } from './layer5-detector.service';
+import { Layer6DetectorService } from './layer6-detector.service';
+import { Layer7DetectorService } from './layer7-detector.service';
 import { IndexReportService } from './index-report.service';
 import { CatalogQueryService } from './catalog-query.service';
 import type { PlanSignal } from '@sql-sandbox/shared';
@@ -24,6 +26,8 @@ export class AnalyzerService {
     private layer3: Layer3DetectorService,
     private layer4: Layer4DetectorService,
     private layer5: Layer5DetectorService,
+    private layer6: Layer6DetectorService,
+    private layer7: Layer7DetectorService,
     private indexReport: IndexReportService,
     private catalogQuery: CatalogQueryService,
   ) {}
@@ -78,6 +82,15 @@ export class AnalyzerService {
     });
 
     // Run all catalog queries + detectors in parallel
+    // Layer 6+7 only run in full mode
+    const layer6Promise = mode === 'full'
+      ? this.layer6.detect(schema, sql)
+      : Promise.resolve({ locks: [], signals: [] as PlanSignal[] });
+
+    const layer7Promise = (mode === 'full' && isDml)
+      ? this.layer7.detect(schema, sql)
+      : Promise.resolve({ walStats: null, signals: [] as PlanSignal[] });
+
     const [
       layer3Signals,
       layer4Signals,
@@ -85,6 +98,8 @@ export class AnalyzerService {
       columnStats,
       gucValues,
       tableStorageStats,
+      layer6Result,
+      layer7Result,
     ] = await Promise.all([
       Promise.resolve(this.layer3.detect(plan, plan.totalCost)),
       this.layer4.detect(schema, tables),
@@ -92,6 +107,8 @@ export class AnalyzerService {
       this.catalogQuery.getColumnStats(schema, tables),
       this.catalogQuery.getGUCValues(),
       this.catalogQuery.getTableStorageStats(schema, tables),
+      layer6Promise,
+      layer7Promise,
     ]);
 
     // Layer 1: CTE fence detection (synchronous, plan-only)
@@ -109,6 +126,8 @@ export class AnalyzerService {
       ...layer3Signals,
       ...layer4Signals,
       ...layer5Signals,
+      ...layer6Result.signals,
+      ...layer7Result.signals,
     ];
 
     return {
@@ -118,10 +137,19 @@ export class AnalyzerService {
       columnStats,
       gucValues,
       tableStorageStats,
+      locks: layer6Result.locks,
+      walStats: layer7Result.walStats
+        ? {
+            walDelta: Number(layer7Result.walStats.walDelta),
+            walBytesBefore: Number(layer7Result.walStats.walBytesBefore),
+            walBytesAfter: Number(layer7Result.walStats.walBytesAfter),
+          }
+        : null,
       executionTime,
       planningTime,
       mode,
       query: sql,
+      isDml,
     };
   }
 }

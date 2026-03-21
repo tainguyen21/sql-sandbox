@@ -8,6 +8,9 @@ import { AnalyzerModule } from './modules/analyzer/analyzer.module';
 import { OptimizerModule } from './modules/optimizer/optimizer.module';
 import { IndexManagerModule } from './modules/index-manager/index-manager.module';
 import { LabModule } from './modules/lab/lab.module';
+import { SeederModule } from './modules/seeder/seeder.module';
+import { ErdModule } from './modules/erd/erd.module';
+import { ImportExportModule } from './modules/import-export/import-export.module';
 
 @Module({
   imports: [
@@ -22,6 +25,9 @@ import { LabModule } from './modules/lab/lab.module';
     OptimizerModule,
     IndexManagerModule,
     LabModule,
+    SeederModule,
+    ErdModule,
+    ImportExportModule,
   ],
   controllers: [AppController],
 })

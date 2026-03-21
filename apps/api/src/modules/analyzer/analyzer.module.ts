@@ -8,6 +8,8 @@ import { Layer2DetectorService } from './layer2-detector.service';
 import { Layer3DetectorService } from './layer3-detector.service';
 import { Layer4DetectorService } from './layer4-detector.service';
 import { Layer5DetectorService } from './layer5-detector.service';
+import { Layer6DetectorService } from './layer6-detector.service';
+import { Layer7DetectorService } from './layer7-detector.service';
 import { IndexReportService } from './index-report.service';
 import { WorkspaceModule } from '../workspace/workspace.module';
 
@@ -23,6 +25,8 @@ import { WorkspaceModule } from '../workspace/workspace.module';
     Layer3DetectorService,
     Layer4DetectorService,
     Layer5DetectorService,
+    Layer6DetectorService,
+    Layer7DetectorService,
     IndexReportService,
   ],
   exports: [AnalyzerService],
