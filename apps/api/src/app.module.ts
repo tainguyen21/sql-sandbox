@@ -5,6 +5,7 @@ import { DatabaseModule } from './modules/database/database.module';
 import { WorkspaceModule } from './modules/workspace/workspace.module';
 import { QueryModule } from './modules/query/query.module';
 import { AnalyzerModule } from './modules/analyzer/analyzer.module';
+import { OptimizerModule } from './modules/optimizer/optimizer.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AnalyzerModule } from './modules/analyzer/analyzer.module';
     WorkspaceModule,
     QueryModule,
     AnalyzerModule,
+    OptimizerModule,
   ],
   controllers: [AppController],
 })

@@ -74,4 +74,28 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ sql, mode }),
     }),
+
+  // AI Optimizer
+  getAiSuggestions: (workspaceId: string, sql: string) =>
+    fetcher<any[]>(`/workspaces/${workspaceId}/analyze/suggest`, {
+      method: 'POST',
+      body: JSON.stringify({ sql }),
+    }),
+  applyDdl: (workspaceId: string, ddl: string) =>
+    fetcher<any>(`/workspaces/${workspaceId}/analyze/apply-ddl`, {
+      method: 'POST',
+      body: JSON.stringify({ ddl }),
+    }),
+  applyGuc: (workspaceId: string, guc: string) =>
+    fetcher<any>(`/workspaces/${workspaceId}/analyze/apply-guc`, {
+      method: 'POST',
+      body: JSON.stringify({ guc }),
+    }),
+
+  // A/B Comparison
+  compareQueries: (workspaceId: string, sqlA: string, sqlB: string) =>
+    fetcher<any>(`/workspaces/${workspaceId}/analyze/compare`, {
+      method: 'POST',
+      body: JSON.stringify({ sqlA, sqlB }),
+    }),
 };

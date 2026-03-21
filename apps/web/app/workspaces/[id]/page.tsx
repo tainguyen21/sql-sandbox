@@ -9,6 +9,8 @@ import { SnippetSidebar } from '@/components/editor/snippet-sidebar';
 import { TableListPanel } from '@/components/schema/table-list-panel';
 import { TableDetailPanel } from '@/components/schema/table-detail-panel';
 import { AnalyzerPanel } from '@/components/analyzer/analyzer-panel';
+import { AiSuggestionPanel } from '@/components/optimizer/ai-suggestion-panel';
+import { AbComparePanel } from '@/components/compare/ab-compare-panel';
 
 export default function WorkspacePage() {
   const params = useParams();
@@ -18,7 +20,7 @@ export default function WorkspacePage() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
   const [editorSql, setEditorSql] = useState('');
-  const [activeTab, setActiveTab] = useState<'editor' | 'schema' | 'analyze'>('editor');
+  const [activeTab, setActiveTab] = useState<'editor' | 'schema' | 'analyze' | 'optimize' | 'compare'>('editor');
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -73,6 +75,26 @@ export default function WorkspacePage() {
         >
           Schema
         </button>
+        <button
+          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === 'optimize'
+              ? 'border-primary text-foreground'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          }`}
+          onClick={() => setActiveTab('optimize')}
+        >
+          AI Optimize
+        </button>
+        <button
+          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === 'compare'
+              ? 'border-primary text-foreground'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          }`}
+          onClick={() => setActiveTab('compare')}
+        >
+          A/B Compare
+        </button>
       </div>
 
       {/* Editor tab */}
@@ -114,6 +136,20 @@ export default function WorkspacePage() {
           />
           <TableDetailPanel workspaceId={workspaceId} tableName={selectedTable} />
         </div>
+      )}
+
+      {/* AI Optimize tab */}
+      {activeTab === 'optimize' && (
+        <AiSuggestionPanel
+          workspaceId={workspaceId}
+          sql={editorSql}
+          onCopyQuery={setEditorSql}
+        />
+      )}
+
+      {/* A/B Compare tab */}
+      {activeTab === 'compare' && (
+        <AbComparePanel workspaceId={workspaceId} />
       )}
     </div>
   );

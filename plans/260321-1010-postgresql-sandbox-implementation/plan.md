@@ -32,7 +32,7 @@ created: 2026-03-21
 | 03 | [SQL Editor & Query History](./phase-03-sql-editor-and-query-history.md) | 10h | completed | 02 |
 | 04 | [Form Builder, Seeder & ERD](./phase-04-form-builder-seeder-erd.md) | 14h | pending | 02 |
 | 05 | [Query Analyzer Core](./phase-05-query-analyzer-core.md) | 16h | completed | 03 |
-| 06 | [Query Analyzer Advanced](./phase-06-query-analyzer-advanced.md) | 12h | pending | 05 |
+| 06 | [Query Analyzer Advanced](./phase-06-query-analyzer-advanced.md) | 12h | completed | 05 |
 | 07 | [Index Manager](./phase-07-index-manager.md) | 6h | pending | 05 |
 | 08 | [AI Optimizer & A/B Compare](./phase-08-ai-optimizer-ab-compare.md) | 10h | pending | 06 |
 | 09 | [Transaction Lab](./phase-09-transaction-lab.md) | 12h | pending | 03 |
