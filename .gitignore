@@ -1,7 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -14,7 +14,7 @@
 /coverage
 
 # next.js
-/.next/
+.next/
 /out/
 dist/
 bin/
@@ -87,3 +87,12 @@ external/
 
 # Git worktrees (local development only)
 worktrees/
+
+# OpenCode AI editor settings
+.opencode/
+
+# Stray absolute paths accidentally committed
+Users/
+
+# Reference/prompt markdown files
+pg-sandbox-prompt*.md

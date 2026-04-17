@@ -2,9 +2,17 @@
   "name": "@sql-sandbox/shared",
   "version": "0.1.0",
   "private": true,
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./types/*": "./src/types/*.ts"
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./types/*": {
+      "types": "./src/types/*.d.ts",
+      "default": "./src/types/*.js"
+    }
   },
   "scripts": {
     "build": "tsc --noEmit"
