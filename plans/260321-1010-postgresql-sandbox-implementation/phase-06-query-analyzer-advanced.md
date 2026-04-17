@@ -7,7 +7,7 @@
 
 ## Overview
 - **Priority**: P1
-- **Status**: pending
+- **Status**: completed
 - **Effort**: 12h
 - **Blocked by**: Phase 05
 - **Description**: Extend analyzer with Layer 1 (parse/rewrite - CTE detection), Layer 2 (planner context - pg_stats, GUCs, estimate accuracy), Layer 5 (MVCC/storage - dead tuples, vacuum state, bloat).
@@ -91,15 +91,15 @@
    - HOT update explanation card (educational content)
 
 ## Todo List
-- [ ] Implement CatalogQueryService (pg_stats, pg_settings, pg_stat_user_tables)
-- [ ] Implement Layer1DetectorService (CTE fence detection)
-- [ ] Implement Layer2DetectorService (bad estimates, stale stats, suboptimal GUCs)
-- [ ] Implement Layer5DetectorService (dead tuples, vacuum needed)
-- [ ] Update AnalyzerService to run all layers in parallel
-- [ ] Extend AnalysisResult type with layer 1, 2, 5 data
-- [ ] Build planner context tab (GUCs + column stats)
-- [ ] Build storage & MVCC tab (dead tuples, vacuum)
-- [ ] Test with tables having stale stats and bloat
+- [x] Implement CatalogQueryService (pg_stats, pg_settings, pg_stat_user_tables)
+- [x] Implement Layer1DetectorService (CTE fence detection)
+- [x] Implement Layer2DetectorService (bad estimates, stale stats, suboptimal GUCs)
+- [x] Implement Layer5DetectorService (dead tuples, vacuum needed)
+- [x] Update AnalyzerService to run all layers in parallel
+- [x] Extend AnalysisResult type with layer 1, 2, 5 data
+- [x] Build planner context tab (GUCs + column stats)
+- [x] Build storage & MVCC tab (dead tuples, vacuum)
+- [x] Test with tables having stale stats and bloat
 
 ## Success Criteria
 - Bad estimate signals fire when actual/plan ratio > 10x

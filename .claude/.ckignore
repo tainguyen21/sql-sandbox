@@ -4,7 +4,7 @@
 
 # JS/TS
 node_modules
-dist
+# dist (temporarily allowed for debugging)
 build
 .next
 .nuxt

@@ -1,5 +1,4 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Pool, PoolClient } from 'pg';
 
 /** Schema name validation regex — only allows workspace_<alphanumeric> */
@@ -14,11 +13,11 @@ const SCHEMA_NAME_REGEX = /^workspace_[a-z0-9]+$/;
 export class SandboxPoolService implements OnModuleDestroy {
   private pool: Pool;
 
-  constructor(private config: ConfigService) {
+  constructor() {
     this.pool = new Pool({
       connectionString:
-        this.config.get<string>('SANDBOX_DB_URL') ||
-        'postgresql://sandbox_user:sandbox_pass@localhost:5432/sql_sandbox',
+        process.env.SANDBOX_DB_URL ||
+        'postgresql://sandbox_user:sandbox_pass@localhost:5433/sql_sandbox',
       max: 20,
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 5000,

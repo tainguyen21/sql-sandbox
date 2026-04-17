@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.json",
+  // "extends": "../../tsconfig.json",
   "compilerOptions": {
     "module": "commonjs",
     "moduleResolution": "node",
@@ -9,9 +9,16 @@
     "experimentalDecorators": true,
     "target": "ES2021",
     "outDir": "./dist",
+    "rootDir": "./src",
     "baseUrl": "./",
     "incremental": true,
+    "strict": true,
     "strictPropertyInitialization": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
     "paths": {
       "@sql-sandbox/db": ["../../packages/db/src"],
       "@sql-sandbox/db/*": ["../../packages/db/src/*"],

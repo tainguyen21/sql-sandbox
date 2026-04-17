@@ -13,7 +13,24 @@
       "Bash(git commit:*)",
       "Bash(\"/Users/nguyentai/Workspace/PersonalProject/sql-sandbox/plans/260321-1010-postgresql-sandbox-implementation/plan.md\":*)",
       "Bash(\"/Users/nguyentai/Workspace/PersonalProject/sql-sandbox/plans/260321-1010-postgresql-sandbox-implementation/phase-07-index-manager.md\":*)",
-      "Bash(\"/Users/nguyentai/Workspace/PersonalProject/sql-sandbox/plans/260321-1010-postgresql-sandbox-implementation/phase-09-transaction-lab.md\":*)"
+      "Bash(\"/Users/nguyentai/Workspace/PersonalProject/sql-sandbox/plans/260321-1010-postgresql-sandbox-implementation/phase-09-transaction-lab.md\":*)",
+      "Bash(sed -i '' 's/| 04 |.*| pending |/| 04 | [Form Builder, Seeder \\\\& ERD]\\(\\\\.\\\\/phase-04-form-builder-seeder-erd.md\\) | 14h | completed |/' /Users/nguyentai/Workspace/PersonalProject/sql-sandbox/plans/260321-1010-postgresql-sandbox-implementation/plan.md)",
+      "Bash(sed -i '' 's/| 10 |.*| pending |/| 10 | [Write Path, Locks \\\\& WAL]\\(\\\\.\\\\/phase-10-write-path-locks-wal.md\\) | 10h | completed |/' /Users/nguyentai/Workspace/PersonalProject/sql-sandbox/plans/260321-1010-postgresql-sandbox-implementation/plan.md)",
+      "Bash(sed -i '' 's/| 11 |.*| pending |/| 11 | [Import\\\\/Export]\\(\\\\.\\\\/phase-11-import-export.md\\) | 8h | completed |/' /Users/nguyentai/Workspace/PersonalProject/sql-sandbox/plans/260321-1010-postgresql-sandbox-implementation/plan.md)",
+      "Bash(psql -U postgres -h localhost -c \"SELECT 1 FROM pg_database WHERE datname=''''sql_sandbox''''\")",
+      "Bash(docker ps:*)",
+      "Bash(orb list:*)",
+      "Bash(psql -U postgres -h localhost -p 5433 -c \"SELECT 1\")",
+      "Bash(PGPASSWORD=postgres psql -U postgres -h localhost -p 5433 -c \"SELECT 1\" 2>&1)",
+      "Bash(DATABASE_URL=postgresql://postgres:postgres@localhost:5433/sql_sandbox pnpm --filter @sql-sandbox/db push 2>&1)",
+      "Bash(PGPASSWORD=postgres psql -U postgres -h localhost -p 5433 -d sql_sandbox -f /Users/nguyentai/Workspace/PersonalProject/sql-sandbox/scripts/init-sandbox-role.sql 2>&1)",
+      "Bash(curl -s http://localhost:3001/api/health)",
+      "Bash(npx nest:*)",
+      "Bash(pkill -f \"turbo run dev\")",
+      "Bash(pkill -f \"nest start\")",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(npx tsc:*)",
+      "Bash(grep -l '\"\"type\"\": \"\"module\"\"' packages/*/package.json)"
     ]
   }
 }

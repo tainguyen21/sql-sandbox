@@ -9,7 +9,7 @@ export function getPool(): Pool {
   if (!pool) {
     pool = new Pool({
       connectionString:
-        process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/sql_sandbox',
+        process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5433/sql_sandbox',
       max: 20,
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 5000,
